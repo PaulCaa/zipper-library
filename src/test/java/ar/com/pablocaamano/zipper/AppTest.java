@@ -20,8 +20,14 @@ public class AppTest
     }
 
     @Test
-    public void testErrorCompression(){
+    public void testPathError(){
         boolean result = Zipper.zipFiles("./zaraza");
+        Assert.assertFalse(result);
+    }
+
+    @Test
+    public void testUnknownFileError(){
+        boolean result = Zipper.zipFiles("./zaraza/test.txt");
         Assert.assertFalse(result);
     }
 }
