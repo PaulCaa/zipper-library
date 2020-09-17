@@ -1,6 +1,7 @@
 package ar.com.pablocaamano.zipper.service;
 
 import ar.com.pablocaamano.zipper.exception.CompressionProcessException;
+import ar.com.pablocaamano.zipper.exception.InvalidParameterException;
 import ar.com.pablocaamano.zipper.util.FileUtils;
 import java.io.*;
 import java.util.zip.ZipEntry;
@@ -15,6 +16,8 @@ import java.util.zip.ZipOutputStream;
 public class ZipperService {
 
     private static final String OSX_HIDDEN_FILES = ".DS_STORE";
+    private static final String ZIP_EXTENSION = ".zip";
+    private static final String DEFAULT_OUTPUT = "zipper";
 
     private String inputPath;
     private String outputPath;
@@ -28,8 +31,9 @@ public class ZipperService {
     }
 
     public ZipperService(String inputPath, String outputPath, String fileName){
+        paramValidation("inputPath",inputPath);
         this.inputPath = FileUtils.checkDirectoyrFormat(inputPath);
-        this.outputPath = FileUtils.checkDirectoyrFormat(outputPath);
+        this.outputPath = outputPath;
         this.fileName = fileName;
     }
 
@@ -55,7 +59,6 @@ public class ZipperService {
      * @throws IOException
      */
     public void unzip() {
-        paramValidation();
         try {
             File zip = new File(inputPath);
             FileInputStream fileInput = new FileInputStream(zip);
@@ -98,13 +101,18 @@ public class ZipperService {
     }
 
     private void zipProcess(String fileName){
-        paramValidation();
         try {
             File input = new File(inputPath + fileName);
             if (this.fileName == null) {
                 this.fileName = input.getName();
+                this.fileName.replace(".","");
+                this.fileName.replace("/", "");
             }
-            FileOutputStream outputStream = new FileOutputStream(outputPath + fileName + ".zip");
+            if(outputPath == null || outputPath.length() == 0){
+                outputPath = FileUtils.checkDirectoyrFormat(inputPath + DEFAULT_OUTPUT);
+                FileUtils.makeDirectory(outputPath);
+            }
+            FileOutputStream outputStream = new FileOutputStream(outputPath + this.fileName + ZIP_EXTENSION);
             this.zipOutputStream = new ZipOutputStream(outputStream);
             addFile("", input);
             zipOutputStream.flush();
@@ -119,6 +127,9 @@ public class ZipperService {
     private void addFile(String path, File file) throws IOException{
         if(file.isDirectory()){
             for(File f : file.listFiles()){
+                if(f.getName().endsWith(DEFAULT_OUTPUT)){
+                    continue;
+                }
                 String filePath = path + file.getName() + "/";
                 ZipEntry entry = new ZipEntry(filePath);
                 zipOutputStream.putNextEntry(entry);
@@ -140,18 +151,9 @@ public class ZipperService {
         }
     }
 
-    private void paramValidation(){
-        if(inputPath == null || inputPath.length() == 0){
-            throw new CompressionProcessException("Input param is empty");
-        }
-        if(!FileUtils.exists(inputPath)){
-            throw new CompressionProcessException("input not exists");
-        }
-        if(outputPath == null || outputPath.length() == 0){
-            throw new CompressionProcessException("Output path is empty");
-        }
-        if(!FileUtils.exists(outputPath)){
-            throw new CompressionProcessException("output path not exists");
+    private void paramValidation(String paramName, String paramValue){
+        if(paramValue == null || paramValue.length() == 0){
+            throw new InvalidParameterException("Null or empty param '" + paramName + "'");
         }
     }
 }

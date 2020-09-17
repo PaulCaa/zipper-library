@@ -91,6 +91,9 @@ public class FileUtils {
         }
         if(file.isDirectory()){
             for(File f : file.listFiles()){
+                if(f.isDirectory()){
+                    cleanAndRemove(f.getPath());
+                }
                 remove(f.getPath());
             }
         }

@@ -27,7 +27,7 @@ public class Zipper implements Serializable {
      * @return
      */
     public static Zipper setup(){
-        if(instance != null){
+        if(instance == null){
             return new Zipper();
         }
         return instance;
@@ -68,6 +68,9 @@ public class Zipper implements Serializable {
      * @return
      */
     public Zipper build(){
+        if(outputPath == null || outputPath.length() == 0){
+            outputPath = "";
+        }
         this.service = new ZipperService(input,outputPath,fileName);
         return this;
     }

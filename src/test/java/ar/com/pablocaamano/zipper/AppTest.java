@@ -35,9 +35,10 @@ public class AppTest
                 Zipper zipper = Zipper.setup().input(testPath).build();
                 zipper.compress();
             }
-            boolean result = FileUtils.exists(testPath + "/zipper/zipper.zip");
+            boolean result = FileUtils.exists(testPath + "/zipper/tmp.zip");
             Assert.assertTrue(result);
         }catch(Exception exception) {
+            System.out.println(exception.getMessage());
         }finally {
             if(FileUtils.exists(testPath)){
                 FileUtils.cleanAndRemove(testPath);
