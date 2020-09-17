@@ -6,7 +6,7 @@
 
   <groupId>ar.com.pablocaamano.zipper</groupId>
   <artifactId>zipper-library</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 
   <name>zipper-library</name>
   <description>Library to zip and unzip files</description>
